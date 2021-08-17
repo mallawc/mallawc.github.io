@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <!--Description-->
+
+    
+
+    
+        <meta name="description" content="“T4 is not an explosive”了解IDA Python后，我们就能开始编写自己的插件了。t4插件是一个特征指令检索插件，是结合IDA反汇编分析软件，能够自动化检索符合特定漏洞利用模式的指令块的一个插件工具。之所以编写t4插件，是因为前段时间我手上恰好有十个含有各种类型漏洞的bin文"/>
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Mallawc"/>
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="t4"/>
+    
+
+    <!--Open Graph Description-->
+    
+        <meta property="og:description" content="“T4 is not an explosive”了解IDA Python后，我们就能开始编写自己的插件了。t4插件是一个特征指令检索插件，是结合IDA反汇编分析软件，能够自动化检索符合特定漏洞利用模式的指令块的一个插件工具。之所以编写t4插件，是因为前段时间我手上恰好有十个含有各种类型漏洞的bin文"/>
+    
+
+    <!--Open Graph Site Name-->
+        <meta property="og:site_name" content="Coding..."/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article"/>
+    
+
+    <!--Page Cover-->
+    
+    
+        <meta property="og:image" content="http://example.comimg/idacfg-bg.jpg"/>
+    
+
+        <meta name="twitter:card" content="summary_large_image"/>
+
+    
+
+    
+        <meta name="twitter:image" content="http://example.comimg/idacfg-bg.jpg"/>
+    
+
+    <!-- Title -->
+    
+    <title>t4 - Coding...</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+    <link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css"/>
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css"/>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet"/>
+
+    <!-- Google Analytics -->
+    
+
+
+    <!-- favicon -->
+    
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">MallawcTechBlog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li>
+                        <a href="/">
+                            
+                                Home
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/archives">
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/tags">
+                            
+                                Tags
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/categories">
+                            
+                                Categories
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/%5Bobject%20Object%5D">
+                            
+                                <i class="fa fa-github fa-stack-2x"></i>
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('/img/idacfg-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>t4</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2021-08-13
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+                <div class="col-lg-4 col-lg-offset-2 col-md-5 col-md-offset-1 post-tags">
+                    
+                        
+
+
+<a href="/tags/reverse/">#reverse</a>
+
+
+                    
+                </div>
+                <div class="col-lg-4 col-md-5 post-categories">
+                    
+                </div>
+            
+
+            <!-- Gallery -->
+            
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <h1 id="“T4-is-not-an-explosive”"><a href="#“T4-is-not-an-explosive”" class="headerlink" title="“T4 is not an explosive”"></a><em>“T4 is not an explosive”</em></h1><p>了解IDA Python后，我们就能开始编写自己的插件了。<br>t4插件是一个<strong>特征指令检索</strong>插件，是结合IDA反汇编分析软件，能够自动化检索符合特定<strong>漏洞利用</strong>模式的指令块的一个插件工具。<br>之所以编写t4插件，是因为前段时间我手上恰好有十个含有各种类型漏洞的bin文件，需要对这些漏洞进行利用（就是我已经获知存在什么样的漏洞，但是缺少利用这些漏洞的途径），由于文件比较多，需要用<strong>自动化</strong>的方法检索所有的<strong>潜在利用点</strong>。由于只需要静态分析，使用IDA Python脚本化插件是比较适合的。</p>
+<h2 id="一、特征指令"><a href="#一、特征指令" class="headerlink" title="一、特征指令"></a>一、特征指令</h2><h3 id="1-漏洞利用点具体是什么？"><a href="#1-漏洞利用点具体是什么？" class="headerlink" title="1. 漏洞利用点具体是什么？"></a>1. 漏洞利用点具体是什么？</h3><p>我们要寻找的<strong>漏洞利用点</strong>其实就是一定模式下的<strong>特征指令</strong>，如下图：<br><img src="https://gitee.com/mallawc/myimage/raw/master/t4_pattern.jpg" width="680" height="313">  </p>
+<p>有“模式”说明存在<strong>共同的规律</strong>，观察这段指令不难发现他的意思就是：将内存中的数据写入到<strong>寄存器</strong>中，然后test指令检测寄存器的值是否为空，最后跳转到实现调用(call)寄存器值的指令。  </p>
+<p>模式如下：  </p>
+<blockquote>
+<p>mov reg,[memory]<br>test reg,reg<br>jmp<br>call reg</p>
+</blockquote>
+<h3 id="2-为什么特征指令能够作为漏洞利用点？"><a href="#2-为什么特征指令能够作为漏洞利用点？" class="headerlink" title="2. 为什么特征指令能够作为漏洞利用点？"></a>2. 为什么特征指令能够作为漏洞利用点？</h3><p>这需要我们比较熟悉漏洞利用的方法，有了这个前提，我们就很容易理解为什么上述的特征指令能够作为漏洞利用点：在有<strong>任意内存写入</strong>漏洞的前提下，可以通过<code>mov reg,[memory]</code>这条指令中的<code>[memory]</code>内存块，写入我们的恶意代码从而实现构造<strong>控制流劫持</strong>。  </p>
+<p>分析出特征指令的模式后，我们还需要做好编写插件的准备。  </p>
+<h2 id="二、配置环境"><a href="#二、配置环境" class="headerlink" title="二、配置环境"></a>二、配置环境</h2><h3 id="1-我使用的安装环境："><a href="#1-我使用的安装环境：" class="headerlink" title="1. 我使用的安装环境："></a>1. 我使用的安装环境：</h3><ol>
+<li>IDA_Pro_v6.8_and_Hex-Rays_Decompiler_(ARM,x64,x86)_Green  </li>
+<li>Python v.2.7.6  </li>
+</ol>
+<h3 id="2-配置IDA-Python环境："><a href="#2-配置IDA-Python环境：" class="headerlink" title="2. 配置IDA Python环境："></a>2. 配置IDA Python环境：</h3><ol>
+<li>机器上安装了Python，到Python的官网<a target="_blank" rel="noopener" href="http://www.python.org/getit/">http://www.python.org/getit/</a>下载一个2.6或者2.7的安装包。注意对应操作系统类型及位数。</li>
+<li>到github上面下载相应版本的IDAPython,注意IDA版本和Python版本都要和自己机器上安装的版本相对应。这是地址<a target="_blank" rel="noopener" href="https://github.com/idapython/bin">https://github.com/idapython/bin</a></li>
+<li>将IDAPython解压后的Python文件夹内的所有内容覆盖掉IDA原有Python文件夹（IDA安装目录下）下面的内容。</li>
+<li>将IDAPython解压后的Plugins文件夹的python.plw和python.p64拷贝到IDA原有Plugins文件夹（自定义，一般IDA安装目录下）下。</li>
+<li>将IDAPython解压后的python.cfg文件拷贝到IDA原有cfg文件夹（IDA安装目录下）下。</li>
+<li>把python安装目录下的python27.dll复制到IDA安装目录下。如果python2.7安装包里没有pyhton27.dll那么可以找一个Python26.dll改为python27.dll也是可以的。但是要注意python的系统位数要和IDAPython的系统位数相同。</li>
+<li>重启IDA，就可以了。效果是：File菜单下面会有Python Command选项，而且Script files选项中可以选择py文件。</li>
+<li>出现Python Command选项</li>
+<li>Script files选项中可以选择py文件  </li>
+<li>python脚本可以运行  </li>
+</ol>
+<h2 id="三、IDA-Python模块的基本操作"><a href="#三、IDA-Python模块的基本操作" class="headerlink" title="三、IDA Python模块的基本操作"></a>三、IDA Python模块的基本操作</h2><p>我们已经知道IDA Python包含三大模块：idautils、idc、idaapi  </p>
+<p>关于模块的基本操作有很多，这里只说明编写t4插件用到的操作。想了解更多可以到<a target="_blank" rel="noopener" href="https://hex-rays.com/products/ida/support/idapython_docs/index.html">https://hex-rays.com/products/ida/support/idapython_docs/index.html</a>  </p>
+<p>IDA Python中 <code>ea</code> 表示 地址  </p>
+<table>
+<thead>
+<tr>
+<th align="left">Instruction</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">idc.ScreenEA()</td>
+<td align="left">获得当前地址，返回一个int值(ea)</td>
+</tr>
+<tr>
+<td align="left">idc.here()</td>
+<td align="left">同上</td>
+</tr>
+<tr>
+<td align="left">idc.NextHead(ea)</td>
+<td align="left">获取下一个指令的地址</td>
+</tr>
+<tr>
+<td align="left">idc.SegStart(seg</td>
+<td align="left">获取当前段的开头地址</td>
+</tr>
+<tr>
+<td align="left">idc.SegEnd(seg)</td>
+<td align="left">获取当前段的结束地址</td>
+</tr>
+<tr>
+<td align="left">idc.SegName(ea)</td>
+<td align="left">获得当前地址所在段segment的名称</td>
+</tr>
+<tr>
+<td align="left">idc.GetMnem(ea)</td>
+<td align="left">获得当前反汇编语句的操作符</td>
+</tr>
+<tr>
+<td align="left">idc.NextSeg(ea)</td>
+<td align="left">获得下一个段的地址</td>
+</tr>
+<tr>
+<td align="left">idc.GetFunctionName(ea)</td>
+<td align="left">通过某个地址获得函数的名称</td>
+</tr>
+<tr>
+<td align="left">idaapi.get_func(ea)</td>
+<td align="left">返回一个idaapi.func_t类</td>
+</tr>
+<tr>
+<td align="left">ea.startEA</td>
+<td align="left">获得函数的初始地址</td>
+</tr>
+<tr>
+<td align="left">ea.endEA</td>
+<td align="left">获得函数的结束地址</td>
+</tr>
+<tr>
+<td align="left">idc.NextFunciton(ea)</td>
+<td align="left">获取当前函数的后一个函数地址</td>
+</tr>
+<tr>
+<td align="left">idc.PrevFunction(ea)</td>
+<td align="left">获取当前函数的前一个函数地址</td>
+</tr>
+<tr>
+<td align="left">idaapi.get_func(ea)</td>
+<td align="left">返回一个idaapi.func_t类</td>
+</tr>
+<tr>
+<td align="left">ea.startEA</td>
+<td align="left">获得函数的初始地址</td>
+</tr>
+<tr>
+<td align="left">ea.endEA</td>
+<td align="left">获得函数的结束地址</td>
+</tr>
+<tr>
+<td align="left">FlowChart(fc)</td>
+<td align="left">针对函数或者一段区域生成图</td>
+</tr>
+<tr>
+<td align="left">block.startEA()</td>
+<td align="left">块的开始地址</td>
+</tr>
+<tr>
+<td align="left">block.endEA())</td>
+<td align="left">块的结尾地址</td>
+</tr>
+</tbody></table>
+<h2 id="四、编写插件"><a href="#四、编写插件" class="headerlink" title="四、编写插件"></a>四、编写插件</h2><h3 id="1-find-Seg"><a href="#1-find-Seg" class="headerlink" title="1. find_Seg"></a>1. find_Seg</h3><p>根据上一个blog说到的plugin_t类实例，我们就以这个实例为起点。在run成员开始加载我们的主函数find_Seg()，其他成员的修改以及作用自行研究。  </p>
+<pre><code>class test_plugin_t(plugin_t):
+    flags = 0
+    wanted_name = &quot;t4 plugin&quot; 
+    wanted_hotkey = &quot;z&quot;
+    comment = &quot;t4 plugin&quot;
+    help = &quot;something helpful&quot;
+
+    def init (self):
+        msg(&quot;t4 init called.\n&quot;)
+        return PLUGIN_OK 
+    
+    def term(self):
+        msg(&quot;t4 term called.\n&quot;)
+
+    def run(self,arg):
+        msg(&quot;[T4 is Not an Explosive]\n&quot;)
+        find_Seg()
+
+def PLUGIN_ENTRY():
+    return test_plugin_t()
+</code></pre>
+<p>find_Seg()函数的作用其实就是：因为是对整个文件进行检索，所以查找bin文件的每一个<strong>段（Segment）</strong>，其中又调用了另一个核心函数find_Code()</p>
+<pre><code>def find_Seg():
+    # only searchfor the segment we want,such as &#39;.text&#39;
+    for seg in Segments() :
+        find_Code(idc.SegName(seg),idc.SegStart(seg),idc.SegEnd(seg))
+</code></pre>
+<h3 id="2-find-Code"><a href="#2-find-Code" class="headerlink" title="2. find_Code"></a>2. find_Code</h3><p>find_Code()函数作用就是匹配<strong>特征指令</strong>，以当前地址为起点，将<code>mov reg,[memory]</code>、<code>test reg,reg</code>、<code>jmp</code>、<code>call reg</code> 四个模式进行顺序检索匹配  </p>
+<p>test指令后紧接的是<strong>flag值零判断跳转</strong>，即jz或jnz跳转指令，跳转的处理通过函数find_ins_jmp()解决，目的是跳转到下一个<strong>基本块（basic block）</strong>  </p>
+<p><u>为什么要跳转到下一个基本块？什么是基本块？</u>  </p>
+<h4 id="2-1-基本块"><a href="#2-1-基本块" class="headerlink" title="2.1 基本块"></a>2.1 基本块</h4><p>这里需要先了解基本块的概念：<br><strong>基本块</strong>指的是：指程序中顺序执行的语句序列，控制流只能从基本块中的第一个指令进人该块。也就是说，没有跳转到基本块中间的转移指令。<br>除了基本块的最后一个指令，控制流在离开基本块之前不会停止或者跳转。可以说基本块是反汇编分析的一个重要的概念，它定义了程序指令的划分的最小颗粒。</p>
+<p>在IDA中，基本块的体现是<strong>CFG图</strong>中的一个个程序块：<br><img src="https://gitee.com/mallawc/myimage/raw/master/t4_block.jpg" width="680" height="313"></p>
+<h3 id="3-jmp"><a href="#3-jmp" class="headerlink" title="3. jmp"></a>3. jmp</h3><p>跳转只涉及到两个指令：<code>jz</code>和<code>jnz</code> ，按照我们的预期，执行<code>test reg,reg</code>这个<strong>测试寄存器是否为空</strong>指令后，<code>flag</code>不为<code>0</code>（因为<code>mov reg,[memory]</code>指令后reg不为空），如果是jz指令则不会跳转，而如果是jnz指令则会跳转。如下图：在flag不为0的前提下，左半部分是<code>jz</code>指令将会在相邻的两个基本块之间的顺序执行，右半部分是<code>jnz</code>指令将会在不相邻的两个基本块之间的跳转执行。<br><img src="https://gitee.com/mallawc/myimage/raw/master/t4_jmp2block.jpg" width="680" height="313"></p>
+<h3 id="4-find-ins-call"><a href="#4-find-ins-call" class="headerlink" title="4. find_ins_call"></a>4. find_ins_call</h3><p>如果跳转后通过<code>while(1)</code>去检索<code>call reg</code>是错误的，因为我们忽略了这样的问题：检索的过程中可能跨越了大量的代码却仍然检索不出<code>call reg</code>，即使找到<code>call reg</code>指令，而由于<strong>跨度较大</strong>（跨越了大量的基本块），<code>reg</code>很有可能在中间部分就已经被<strong>修改</strong>过了（如出现<code>mov eax, 0 ;(reg: eax)</code>），这显然是我们不希望检索出来的。如果我们跳转后只检索当下<strong>基本块</strong>就可以避免以上的情况。（<em>reg是register的代号</em>）  </p>
+<p>有了以上思路，下一个难点就是对寻找<code>call reg</code>模式指令的具体操作。核心的检索操作如下。以<code>jz</code>跳转为例：获取跳转地址<code>addr</code>（<code>addr</code>也是下一个基本块的入口地址），获取当前地址所属的函数，如果函数不存在则结束检索（这一步很重要，有一些基本块是不属于任何函数），若存在则通过<code>FlowChart</code>导出函数的块（可能由多个基本块组成的），通过<code>block.endEA(addr)</code>定位到<code>addr</code>所属的基本块并获取块尾地址。得到检索范围后（该基本块的块首到块尾），开始检索。检索应该遵循这样的规则：只要检索到含<code>reg</code>的指令，若该指令不匹配<code>call reg</code>，则说明<code>reg</code>被修改过，退出检索；若匹配上<code>call reg</code>说明检索成功。  </p>
+<pre><code>pattern_call_reg = re.compile(r&quot;call\s+%s&quot; %reg)
+
+if re.search(r&#39;jz&#39;,GetDisasm(ea)):
+    addr = NextHead(ea)
+
+    f = get_func(addr)
+
+    if not f:
+        return False
+
+    fc = FlowChart(f)
+
+    for block in fc :
+        if block.startEA &lt;= addr and block.endEA &gt; addr:
+            block_end_addr = block.endEA
+
+    while addr != PrevHead(block.endEA):
+        if re.search(reg,GetDisasm(addr)) and not re.match(r&quot;call\s+&quot;+reg,GetDisasm(addr)):
+            return False
+
+        elif re.search(reg,GetDisasm(addr)) and re.match(r&quot;call\s+&quot;+reg,GetDisasm(addr)):
+            return addr
+        else: 
+            addr = NextHead(addr)
+    else:
+        return False
+</code></pre>
+<p>其中注意生成图后获取目标块的的操作：</p>
+<pre><code>fc = FlowChart(f)
+
+for block in fc :
+    if block.startEA &lt;= addr and block.endEA &gt; addr:
+        block_end_addr = block.endEA
+</code></pre>
+<p>IDA官方文档对<code>FlowChart</code>类的定义是：<br><em><strong>Flowchart class used to determine basic blocks. Check ex_gdl_qflow_chart.py for sample usage.Returns a basic block</strong></em></p>
+<p>以上步骤结合源码<a target="_blank" rel="noopener" href="https://gitee.com/mallawc/t4/blob/master/t4_plugin.py">https://gitee.com/mallawc/t4/blob/master/t4_plugin.py</a>会理解得更透彻</p>
+<p>至此，整个t4插件的核心部分就完成了。</p>
+<h2 id="五、测试"><a href="#五、测试" class="headerlink" title="五、测试"></a>五、测试</h2><p>运行插件后，在ida的输出窗口能看到回显：<br><img src="https://gitee.com/mallawc/myimage/raw/master/t4_test.png" width="550" height="313"></p>
+<p>直接点击地址就能自动跳转到CFG相对应的地方。特征指令能够检索出来，测试通过！</p>
+<h2 id="六、总结"><a href="#六、总结" class="headerlink" title="六、总结"></a>六、总结</h2><p>t4插件是我花了大概三周时间编写出来的，期间还有各种各样的事耽搁了，能够编码的时间很少，在对ida的用法甚至都不熟悉的情况下，从零开始编写的一个<strong>特征指令检索插件</strong>，期间克服了很多困难，最终还是顺利完成了整个插件的设计和编写。  </p>
+
+
+                
+            </div>
+
+            <!-- Comments -->
+            
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
+            
+        </div>
+    </div>
+</article>
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+
+                    
+
+                    
+
+                    
+
+                    
+
+                    
+                </ul>
+                <p class="copyright text-muted">&copy; 2021 Mallawc<br></p>
+                <p class="copyright text-muted">Original Theme <a target="_blank" href="http://startbootstrap.com/template-overviews/clean-blog/">Clean Blog</a> from <a href="http://startbootstrap.com/" target="_blank">Start Bootstrap</a></p>
+                <p class="copyright text-muted">Adapted for <a target="_blank" href="https://hexo.io/">Hexo</a> by <a href="http://www.codeblocq.com/" target="_blank">Jonathan Klughertz</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>
