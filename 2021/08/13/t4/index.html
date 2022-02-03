@@ -13,7 +13,7 @@
     
 
     
-        <meta name="description" content="“T4 is not an explosive”了解IDA Python后，我们就能开始编写自己的插件了。t4插件是一个特征指令检索插件，是结合IDA反汇编分析软件，能够自动化检索符合特定漏洞利用模式的指令块的一个插件工具。之所以编写t4插件，是因为前段时间我手上恰好有十个含有各种类型漏洞的bin文"/>
+        <meta name="description" content="独立研究员"/>
     
 
     <!--Author-->
@@ -28,11 +28,11 @@
 
     <!--Open Graph Description-->
     
-        <meta property="og:description" content="“T4 is not an explosive”了解IDA Python后，我们就能开始编写自己的插件了。t4插件是一个特征指令检索插件，是结合IDA反汇编分析软件，能够自动化检索符合特定漏洞利用模式的指令块的一个插件工具。之所以编写t4插件，是因为前段时间我手上恰好有十个含有各种类型漏洞的bin文"/>
+        <meta property="og:description" content="独立研究员"/>
     
 
     <!--Open Graph Site Name-->
-        <meta property="og:site_name" content="Coding..."/>
+        <meta property="og:site_name" content="Mallawc的技术博客"/>
 
     <!--Type page-->
     
@@ -55,7 +55,7 @@
 
     <!-- Title -->
     
-    <title>t4 - Coding...</title>
+    <title>t4 - Mallawc的技术博客</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
@@ -209,7 +209,7 @@
 
             <!-- Post Main Content -->
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <h1 id="“T4-is-not-an-explosive”"><a href="#“T4-is-not-an-explosive”" class="headerlink" title="“T4 is not an explosive”"></a><em>“T4 is not an explosive”</em></h1><p>了解IDA Python后，我们就能开始编写自己的插件了。<br>t4插件是一个<strong>特征指令检索</strong>插件，是结合IDA反汇编分析软件，能够自动化检索符合特定<strong>漏洞利用</strong>模式的指令块的一个插件工具。<br>之所以编写t4插件，是因为前段时间我手上恰好有十个含有各种类型漏洞的bin文件，需要对这些漏洞进行利用（就是我已经获知存在什么样的漏洞，但是缺少利用这些漏洞的途径），由于文件比较多，需要用<strong>自动化</strong>的方法检索所有的<strong>潜在利用点</strong>。由于只需要静态分析，使用IDA Python脚本化插件是比较适合的。</p>
+                <p>了解IDA Python后，我们就能开始编写自己的插件了。<br>t4插件是一个<strong>特征指令检索</strong>插件，是结合IDA反汇编分析软件，能够自动化检索符合特定<strong>漏洞利用</strong>模式的指令块的一个插件工具。<br>之所以编写t4插件，是因为前段时间我手上恰好有十个含有各种类型漏洞的bin文件，需要对这些漏洞进行利用（就是我已经获知存在什么样的漏洞，但是缺少利用这些漏洞的途径），由于文件比较多，需要用<strong>自动化</strong>的方法检索所有的<strong>潜在利用点</strong>。由于只需要静态分析，使用IDA Python脚本化插件是比较适合的。</p>
 <h2 id="一、特征指令"><a href="#一、特征指令" class="headerlink" title="一、特征指令"></a>一、特征指令</h2><h3 id="1-漏洞利用点具体是什么？"><a href="#1-漏洞利用点具体是什么？" class="headerlink" title="1. 漏洞利用点具体是什么？"></a>1. 漏洞利用点具体是什么？</h3><p>我们要寻找的<strong>漏洞利用点</strong>其实就是一定模式下的<strong>特征指令</strong>，如下图：<br><img src="https://gitee.com/mallawc/myimage/raw/master/t4_pattern.jpg" width="680" height="313">  </p>
 <p>有“模式”说明存在<strong>共同的规律</strong>，观察这段指令不难发现他的意思就是：将内存中的数据写入到<strong>寄存器</strong>中，然后test指令检测寄存器的值是否为空，最后跳转到实现调用(call)寄存器值的指令。  </p>
 <p>模式如下：  </p>
@@ -439,7 +439,7 @@ for block in fc :
 
                     
                 </ul>
-                <p class="copyright text-muted">&copy; 2021 Mallawc<br></p>
+                <p class="copyright text-muted">&copy; 2022 Mallawc<br></p>
                 <p class="copyright text-muted">Original Theme <a target="_blank" href="http://startbootstrap.com/template-overviews/clean-blog/">Clean Blog</a> from <a href="http://startbootstrap.com/" target="_blank">Start Bootstrap</a></p>
                 <p class="copyright text-muted">Adapted for <a target="_blank" href="https://hexo.io/">Hexo</a> by <a href="http://www.codeblocq.com/" target="_blank">Jonathan Klughertz</a></p>
             </div>
