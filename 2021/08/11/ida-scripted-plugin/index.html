@@ -13,8 +13,8 @@
     
 
     
-        <meta name="description" content="“On the Shoulders of the Giants”一、ida插件绝大多数为ida开发的第三方软件都是以插件形式发布的，所以想扩展ida功能，如面对一些特殊的场景，需要开发自己的ida功能拓展工具，就非常有必要学会如何写一个ida插件。
-二、为什么要用ida插件？根本原因：ida用户的千"/>
+        <meta name="description" content="On the Shoulders of the Giants -hack IDA scripted-plug-in根据Chirs Eagle所著《ida pro 权威指南》–IDA 插件体系结构一章中所说：
+自从版本4.7以来，ida引入了的一些相对于旧版本的新特性，允许使用一种ida脚本语言开发相"/>
     
 
     <!--Author-->
@@ -24,13 +24,13 @@
 
     <!--Open Graph Title-->
     
-        <meta property="og:title" content="Hack the IDA Scripted Plug-in"/>
+        <meta property="og:title" content="ida scripted plugin"/>
     
 
     <!--Open Graph Description-->
     
-        <meta property="og:description" content="“On the Shoulders of the Giants”一、ida插件绝大多数为ida开发的第三方软件都是以插件形式发布的，所以想扩展ida功能，如面对一些特殊的场景，需要开发自己的ida功能拓展工具，就非常有必要学会如何写一个ida插件。
-二、为什么要用ida插件？根本原因：ida用户的千"/>
+        <meta property="og:description" content="On the Shoulders of the Giants -hack IDA scripted-plug-in根据Chirs Eagle所著《ida pro 权威指南》–IDA 插件体系结构一章中所说：
+自从版本4.7以来，ida引入了的一些相对于旧版本的新特性，允许使用一种ida脚本语言开发相"/>
     
 
     <!--Open Graph Site Name-->
@@ -57,7 +57,7 @@
 
     <!-- Title -->
     
-    <title>Hack the IDA Scripted Plug-in - Mallawc的技术博客</title>
+    <title>ida scripted plugin - Mallawc的技术博客</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
@@ -169,7 +169,7 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 <div class="post-heading">
-                    <h1>Hack the IDA Scripted Plug-in</h1>
+                    <h1>ida scripted plugin</h1>
                     
                     <span class="meta">
                         <!-- Date and Author -->
@@ -196,7 +196,7 @@
                         
 
 
-<a href="/tags/reverse/">#reverse</a>
+<a href="/tags/逆向/">#逆向</a>
 
 
                     
@@ -211,64 +211,12 @@
 
             <!-- Post Main Content -->
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <h1 id="“On-the-Shoulders-of-the-Giants”"><a href="#“On-the-Shoulders-of-the-Giants”" class="headerlink" title="“On the Shoulders of the Giants”"></a><em>“On the Shoulders of the Giants”</em></h1><h2 id="一、ida插件"><a href="#一、ida插件" class="headerlink" title="一、ida插件"></a>一、ida插件</h2><p>绝大多数为ida开发的第三方软件都是以插件形式发布的，所以想扩展ida功能，如面对一些特殊的场景，需要开发自己的ida功能拓展工具，就非常有必要学会如何写一个ida插件。<br><img src="https://gitee.com/mallawc/myimage/raw/master/idalogo.jpg" width="256" height="256"></p>
-<h2 id="二、为什么要用ida插件？"><a href="#二、为什么要用ida插件？" class="headerlink" title="二、为什么要用ida插件？"></a>二、为什么要用ida插件？</h2><p>根本原因：ida用户的千奇百怪的<strong>需求</strong>。<br>即使对于强大的ida，也无法满足用户的各种需求，ida没有选择无止境的开发出满足用户需求的功能，而是选择了在ida中集成了一个脚本引擎，让用户从编程角度对ida的操作进行全面控制。  </p>
-<h2 id="三、IDA-脚本"><a href="#三、IDA-脚本" class="headerlink" title="三、IDA 脚本"></a>三、IDA 脚本</h2><p>开发ida插件就要使用ida集成的脚本。ida脚本可以用于简单的单行程序，也可以开发功能全面的程序，ida脚本语言可以看作一种<strong>数据查询语言</strong>，它能够以编程的方式访问ida数据库（idb）的内容。</p>
-<p>ida目前使用两种不同的语言编写脚本： </p>
-<ul>
-<li>idc：ida原始嵌入式脚本语言（类c语言）  </li>
-<li>IDA Python: 由<strong>Gergely Erdelyi</strong>开发的插件，来支持python集成式脚本，ida5.4集成IDA Python   </li>
-</ul>
-<h3 id="1-IDA脚本创建插件的过程"><a href="#1-IDA脚本创建插件的过程" class="headerlink" title="1. IDA脚本创建插件的过程"></a>1. IDA脚本创建插件的过程</h3><p>我们可以使用ida SDK创建各种模块（插件也属于一种模块）。所有的ida模块都以适用于执行插件的平台的共享库组件实现。在ida的模块化体系结构下，模块不需要导出任何函数。而每个模块必须导出某个特定类的一个变量。就ida插件而言，这个特定类就叫做plugin_t，该类在SDK的loader.hpp文件中定义。</p>
-<pre><code>class plugin_t &#123;
-public:
-    int version;                    // Should be equal to IDP_INTERFACE_VERSION
-    int flag;                       // Feature of plugin
-    int (idaapi* init)(void);       // Initialize plugin
-    void (idaapi* term)(void);      // Terminate plugin. This function will be called.
-                                    // When the plugin is unloaded . May be NULL.
-    void (idaapi* run)(int arg);    // Invoke plugin
-    char *comment;                  // Long comment about the plugin
-    char *help;                     // Multiline help about the plugin
-    char *wanted_name;              // The preferred shoret name of the plugin
-    char *wanted_hotkey;            // The preferred hotkey to run the plugin
-&#125;;
-</code></pre>
-<p>重点掌握的三个成员变量：</p>
-<ul>
-<li>init：这是plugin_t类所包含的3个函数指针中的第一个指针。这个特殊的成员是一个指向插件的初始化函数的指针。该函数没有指参数，返回一个int。ida调用这个函数，若检测到返回值为PLUGIN_OK，则允许加载自定义的插件。</li>
-<li>term ：该成员是另一个函数指针。当插件卸载时，ida将调用相关函数，该函数没有参数，也不会返回值。在ida卸载插件之前，这个函数用于执行插件所需的任何清理任务（释放内存、结束处理、保存状态等）。如果在插件被卸载时，你不需要执行任何操作，可以将这个字段设置成NULL。  </li>
-<li>run：该成员指向一个函数，只要用户激活（热键、菜单项、脚本调用）插件，都应该调用这个函数。这个函数是任何插件的核心组件，因为用户正是通过它定义的插件行为的。将插件和脚本进行比较时，这个函数和脚本语言的行为极相似。这个函数接收唯一一个整数参数且不返回任何值。</li>
-</ul>
-<p>在脚本扩展出现之前，ida的插件都是以编译扩展为主，编译扩展需要使用SDK进行开发（与IDC脚本开发相比更难掌握）。虽然编译扩展能够访问功能更全面的API，但是由于复杂性较高，不利于快速开发，所以又衍生出脚本扩展。相比于编译扩展，脚本扩展更适用于小型任务或快速开发工作。idc脚本就是脚本扩展的其中一种，但是idc脚本的缺点也很明显，就是idc语言不支持复杂的数据类型。</p>
-<h2 id="四、IDA-Python"><a href="#四、IDA-Python" class="headerlink" title="四、IDA Python"></a>四、IDA Python</h2><p>IDA Python作为一个插件，它在ida中集成了python解释器，并且能够将python代码注入到ida中并由解释器运行。使用该插件能够实现idc脚本语言的所有功能的python脚本。<br>IDA Python的一个显著优势在于：可访问python的数据处理功能以及所有python模块。此外，它还具有ida SDK的大部分功能，与使用idc相比，使用它可以编写功能更加强大的脚本。而最重要的是在ida社区中，IDA Python拥有众多支持者。从ida5.4集成IDA Python后，Hex-Rays将IDA Python作为ida的标准插件。</p>
-<p>IDA Python与ida的关系：<br><img src="https://gitee.com/mallawc/myimage/raw/master/idapython.png" width="680" height="313"></p>
-<p>IDA Python由三大模块组成：idautils、idc、idaapi<br>使用IDA Python时，IDA Python插件将一个python解释器实例嵌入到ida中，在关闭ida之前，这个解释器都能正常运行，导入的模块、已初始化的变量、函数定义都会被保留，直到被重新定义或退出ida。  </p>
-<h3 id="1-IDA-Python插件创建"><a href="#1-IDA-Python插件创建" class="headerlink" title="1. IDA Python插件创建"></a>1. IDA Python插件创建</h3><p>需要定义一个名为PLUGIN_ENTRY函数，函数必须返回一个plugin_t的一个实例。plugin_t类包含反映SDK的C++ plugin_t类成员的成员。  </p>
-<pre><code>from idaapi import *
-class myIdaPlugin(plugin_t):
-    flags=0
-    wanted_name=&quot;my ida plugin&quot;
-    wanted_hotkey=&quot;F1&quot;
-    comment=&quot;my ida plugin&quot;
-    help=&quot;Something helpful&quot;
-    def init(self):
-        msg(&quot;Ida plugin init called.\n&quot;)
-        return PLUGIN_OK
-    def term(self):
-        msg(&quot;Ida plugin term called.\n&quot;)
-    def run(self,arg):
-        warning(&quot;Ida plugin run(%d) called.\n&quot;%arg)
-def PLUGIN_ENTRY():
-    return myIdaPlugin()
-</code></pre>
-<p>这段代码显示了一个简单的python插件。首先定义了一个名为myIdaPlugin的类（继承自plugin_t），初始化所有必需的成员，并定义实现插件行为的init、term、run函数。在参考《ida pro权威指南（第二版）》的时候，我注意到书上写的代码“def PLUGIN_ENTRY():”是错误的，原文错误在于缩进这个函数。python对于缩进是非常敏感的，因为在python中缩进是区分函数结构、逻辑分支结构的标志。</p>
-<h3 id="2-python插件安装"><a href="#2-python插件安装" class="headerlink" title="2. python插件安装"></a>2. python插件安装</h3><p>只需将脚本复制到<code>&lt;IDADIR&gt;/plugin</code>目录下即可。  </p>
-<h2 id="五、总结"><a href="#五、总结" class="headerlink" title="五、总结"></a>五、总结</h2><p>有了ida SDK和IDA Python插件支持，对ida功能的开发门槛已大大降低.通过python脚本，并熟悉ida python三大模块的操作后，我们就可以动手实现各种特殊功能的插件了，如密码识别插件（对二进制文件做自动化加解密算法识别）、特征指令检索插件（用于找到二进制文件的漏洞利用点）等等。<br>最后提一下我参考的一本重要的工具书：<strong>《ida pro权威指南》(The IDA Pro Book)<strong>，《权威指南》是一本由逆向老兵</strong>Chris Eagle</strong>编写、对于逆向工程初学者来说非常重要的权威读物。希望大家能够读一读、写一写，了解IDA真正的强大之处（可扩展性），而不是停留于F5。对于这本书的核心内容就不再叙述了，这里只讲Chirs在这本书的前言给读者们留下的寄语:  </p>
-<blockquote>
-<p>“对于希望进入逆向工程领域的读者，我希望向你们强调掌握熟练的编程技巧的重要性。理想情况下，你们应热爱编程，甚至时时刻刻都想着编程。如果你对编程感到畏惧，那么逆向工程可能并不适合你。你可能会认为，逆向工程根本不需要编程，因为这只需要分解其他人的程序，但如果无法开发出能帮助你自动完成各种任务的脚本和插件，你永远也不可能成为真正高效的逆向工程人员。对我而言，编程和逆向工程就像是《纽约时报》周日版的纵横字谜游戏，对此我乐在其中。”  </p>
-</blockquote>
-<p>下一个blog我将接着以上内容，继续分享自己编写的一个特征指令检索插件（这里先码上工程仓库：<a target="_blank" rel="noopener" href="https://gitee.com/mallawc/t4">https://gitee.com/mallawc/t4</a>先睹为快），以及编写该插件的过程，后续可能还会添加关于该工具的漏洞利用演示，希望能尽快肝出来吧 &gt;_&lt;。</p>
+                <h1 id="On-the-Shoulders-of-the-Giants-hack-IDA-scripted-plug-in"><a href="#On-the-Shoulders-of-the-Giants-hack-IDA-scripted-plug-in" class="headerlink" title="On the Shoulders of the Giants -hack IDA scripted-plug-in"></a>On the Shoulders of the Giants -<em>hack IDA scripted-plug-in</em></h1><p>根据Chirs Eagle所著《ida pro 权威指南》–IDA 插件体系结构一章中所说：</p>
+<p>自从版本4.7以来，ida引入了的一些相对于旧版本的新特性，允许使用一种ida脚本语言开发相同类型模块，这些特性方便于专业人员使用IDC脚本开发大量优秀的ida第三方插件，大大提高对于ida的使用效率。比如在逆向分析中我们需要寻找一些特征代码，使用脚本插件就能帮助我们在静态下，对目标进行快速全面的检索，我们要做的就只是编写特征代码的规则。</p>
+<p>但是这个阶段开发的插件就必须使用IDC脚本编写，并且需要经过编译。于是ida5.6引入了对脚本化加载器模块的支持，ida5.7则添加了对脚本化插件和处理器模块的支持。虽然脚本化插件功能上可能没有IDC脚本编译的插件强大，但在一定程度上降低了开发难度，并且由于取消了复杂的构架流程，也缩短了开发周期。引入了python后的插件，就与已编译的C++插件一样强大了。</p>
+<p>需要注意，插件通常与热键和菜单项关联，并且只有在数据库打开后才能使用。</p>
+<p>其实插件的本质是对idb的操作，而操作的方法由IDA api提供。</p>
+<p>插件被ida所调用的关键在plugin_t类，在ida的模块化插件体系结构下，模块不需要导出任何函数。而每个模块必须导出某个特定类的一个变量。就插件而言，这个类就叫做plugin_t，定义在SDK的loader.hpp中</p>
 
 
                 
