@@ -13,6 +13,8 @@
     
 
     
+        <meta name="description" content="笔记由于漏洞环境的特性，shellcode往往不是能够直接进行反汇编的bin数据，而是经过了一些变形的数据；其中一种变形方式是：字符串化原始shellcode中难免会有非可见字符或休止符（0x00）出现，这样在一些特定的样本中就容易造成中断，导致漏洞利用失败，因此需要对shellcode进行字符串化"/>
+    
 
     <!--Author-->
     
@@ -21,10 +23,12 @@
 
     <!--Open Graph Title-->
     
-        <meta property="og:title" content="Mallawc的技术博客"/>
+        <meta property="og:title" content="shellcode变形"/>
     
 
     <!--Open Graph Description-->
+    
+        <meta property="og:description" content="笔记由于漏洞环境的特性，shellcode往往不是能够直接进行反汇编的bin数据，而是经过了一些变形的数据；其中一种变形方式是：字符串化原始shellcode中难免会有非可见字符或休止符（0x00）出现，这样在一些特定的样本中就容易造成中断，导致漏洞利用失败，因此需要对shellcode进行字符串化"/>
     
 
     <!--Open Graph Site Name-->
@@ -32,7 +36,7 @@
 
     <!--Type page-->
     
-        <meta property="og:type" content="website"/>
+        <meta property="og:type" content="article"/>
     
 
     <!--Page Cover-->
@@ -51,7 +55,7 @@
 
     <!-- Title -->
     
-    <title>Archives: 2022 - Mallawc的技术博客</title>
+    <title>shellcode变形 - Mallawc的技术博客</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
@@ -155,75 +159,78 @@
 </nav>
 
     <!-- Main Content -->
-    
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
 
-<!-- Page Header -->
-<!-- Set your background image for this header in the theme's configuration: index_cover -->
 <header class="intro-header" style="background-image: url('/img/bg.jpeg')">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <div class="site-heading">
-                    <h1>2022</h1>
+                <div class="post-heading">
+                    <h1>shellcode变形</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2022-02-04
+                        
+                    </span>
                 </div>
             </div>
         </div>
     </div>
 </header>
 
-<!-- Main Content -->
-<div class="container">
-    <div class="row">
-        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+                <div class="col-lg-4 col-lg-offset-2 col-md-5 col-md-offset-1 post-tags">
+                    
+                        
+
+
+<a href="/tags/漏洞利用/">#漏洞利用</a>
+
+
+                    
+                </div>
+                <div class="col-lg-4 col-md-5 post-categories">
+                    
+                </div>
             
-                <div class="post-preview">
-    <a href="/2022/02/04/shellcode变形/">
-        <h1 class="post-title archive">
-            shellcode变形
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2022-02-04
-    </p>
-</div>
+
+            <!-- Gallery -->
             
-                <div class="post-preview">
-    <a href="/2022/02/04/ENI-Server样本分析（CVE-2019-16265）/">
-        <h1 class="post-title archive">
-            ENI Server样本分析和利用（CVE-2019-16265）
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2022-02-04
-    </p>
-</div>
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <h2 id="笔记"><a href="#笔记" class="headerlink" title="笔记"></a>笔记</h2><p>由于漏洞环境的特性，shellcode往往不是能够直接进行反汇编的bin数据，而是经过了一些变形的数据；<br>其中一种变形方式是：字符串化<br>原始shellcode中难免会有非可见字符或休止符（0x00）出现，这样在一些特定的样本中就容易造成中断，导致漏洞利用失败，因此需要对shellcode进行字符串化的变形，例如纯字母shellcode</p>
+<p>加密：为了实现免杀或提高exp脚本被分析的难度，会对shellcode进行高级加密</p>
+<p>以下根据<strong>corelan 团队的exploit编写系列教程第七篇《编写unicode exploit》</strong>进行shellcode变形学习：<br>由问题“在执行缓冲区溢出攻击时，我们的payload在输入之前就被转换大小写，或为uncicode，在很长一段时间内这种覆写类型被认为是无法利用的，只能用于dos而不能执行任意代码”而产生设计一个能够对payload进行可见字符化编码器的想法。<br>通信程序大多数是使用ascii编码（字符串可以在结尾用null：\x00 结束）,\x00常出现在unicode中，而编码\x00容易被截断（如sacii中的’A’会转码为unicode会是’\x0041’，这就是数据转换成宽字符的结果，一些 unicode 转换结果依赖于所使用的代码页）</p>
+<p>unicode几种转换格式：utf-8、utf-32，在windows中使用的是utf-16，utf-16每个字符占用2bytes（16bits）<br>unicode转换结果对构造exploit的影响：对于0x01-0x7F之内的字符，会被插入null；对于0x01-0x7F之外的字符，会被转换为2字节，且2字节的内容不需要包含原字节，这就会对我们构造的exp和shellcode造成负面影响</p>
+<p>编码器 =&gt; 将正常shellcode转换 =&gt;解码器+编码后shellcode</p>
+<p>为了使用解码器，还需采用以下方法设置寄存器：一个寄存器直接指向缓冲区入口地址（该缓冲区是用于存放编码生成的shellcode，即确定shellcode的基址），另一个寄存器需要指向一段可写可执行（WX）的内存地址，以能够向其写入数据。<br>在alpha2编码器中不需要设置第二个寄存器：<br>解码器（decoder）作用是提取出原始shellcode并执行它；decoder并不包含在原始代码中，docoder可自我修改，而且要求buffer区空间比较小。decoder自我修改的特性使得它可以突破alphanumeric代码的限制，过程是会循环创建一个decoder以从编码数据中解码出原始shellcode，然后用解码shellcode覆盖掉编码数据并执行它。因此编码shellcode所运行的内存需要有读写执行的权限，并获知内存地址；</p>
+
+
+                
+            </div>
+
+            <!-- Comments -->
             
-                <div class="post-preview">
-    <a href="/2022/02/03/Log4j2漏洞-CVE-2021-44228-复现/">
-        <h1 class="post-title archive">
-            Log4j2漏洞(CVE-2021-44228)复现(一)
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2022-02-03
-    </p>
-</div>
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
             
-            <div class="archive-before-pagination"></div>
-            <ul class="pager">
-    
-    
-</ul>
         </div>
     </div>
-</div>
-
+</article>
 
     <!-- Footer -->
     <hr />
