@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <!--Description-->
+
+    
+
+    
+        <meta name="description" content="基于模式的漏洞分析模式是一个抽象概念，是从不断出现的事件中发现和抽象出的规律，总结为解决问题的经验
+而漏洞模式，是研究人员在通过对大量已知漏洞的产生原理进行深入分析，并在归纳总结出其一般规律的基础上，抽象出的存在安全缺陷的代码段在二进制代码或汇编代码表现形式上具有的典型特征
+基于模式的漏洞分析的安全"/>
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Mallawc"/>
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="笔记：《软件漏洞分析技术》--二进制漏洞分析：基于模式的漏洞分析"/>
+    
+
+    <!--Open Graph Description-->
+    
+        <meta property="og:description" content="基于模式的漏洞分析模式是一个抽象概念，是从不断出现的事件中发现和抽象出的规律，总结为解决问题的经验
+而漏洞模式，是研究人员在通过对大量已知漏洞的产生原理进行深入分析，并在归纳总结出其一般规律的基础上，抽象出的存在安全缺陷的代码段在二进制代码或汇编代码表现形式上具有的典型特征
+基于模式的漏洞分析的安全"/>
+    
+
+    <!--Open Graph Site Name-->
+        <meta property="og:site_name" content="Mallawc的技术博客"/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article"/>
+    
+
+    <!--Page Cover-->
+    
+    
+        <meta property="og:image" content="http://example.comimg/bg.jpeg"/>
+    
+
+        <meta name="twitter:card" content="summary_large_image"/>
+
+    
+
+    
+        <meta name="twitter:image" content="http://example.comimg/bg.jpeg"/>
+    
+
+    <!-- Title -->
+    
+    <title>笔记：《软件漏洞分析技术》--二进制漏洞分析：基于模式的漏洞分析 - Mallawc的技术博客</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+    <link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css"/>
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css"/>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet"/>
+
+    <!-- Google Analytics -->
+    
+
+
+    <!-- favicon -->
+    
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">MallawcTechBlog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li>
+                        <a href="/">
+                            
+                                Home
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/archives">
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/tags">
+                            
+                                Tags
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/categories">
+                            
+                                Categories
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/%5Bobject%20Object%5D">
+                            
+                                <i class="fa fa-github fa-stack-2x"></i>
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('/img/bg.jpeg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>笔记：《软件漏洞分析技术》--二进制漏洞分析：基于模式的漏洞分析</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2022-02-06
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+
+            <!-- Gallery -->
+            
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <h1 id="基于模式的漏洞分析"><a href="#基于模式的漏洞分析" class="headerlink" title="基于模式的漏洞分析"></a>基于模式的漏洞分析</h1><p><em><strong>模式是一个抽象概念，是从不断出现的事件中发现和抽象出的规律，总结为解决问题的经验</strong></em></p>
+<p>而<code>漏洞模式</code>，是研究人员在通过对大量已知漏洞的产生原理进行深入分析，并在归纳总结出其一般规律的基础上，抽象出的存在安全缺陷的代码段在二进制代码或汇编代码表现形式上具有的典型特征</p>
+<p>基于模式的漏洞分析的安全漏洞挖掘理论，主要用于指导软件安全漏洞的半自动、自动化挖掘过程，是一种以二进制程序静态分析为基础，并<strong>通过漏洞模式匹配检测出脆弱点</strong>，然后通过人工分析脆弱点并进行动态分析，最终验证已知漏洞和挖掘未知漏洞的一套方法理论</p>
+<p>基于模式的漏洞分析方法，除了可针对软件漏洞进行分析，也可以针对<u>网络协议漏洞</u>进行分析。网络协议种类不同，导致漏洞模式区别比较大，网路协议的漏洞往往不具有代表性；并且，网路协议漏洞存在的内在原因，也是处理网络协议数据包的后台软件本身的漏洞。因此，<strong>网络协议漏洞也可以归类于软件漏洞</strong></p>
+<p>从安全研究人员的角度来看，要总结提炼出漏洞模式，需要先对二进制程序进行<code>逆向分析</code> </p>
+<h2 id="分析方法"><a href="#分析方法" class="headerlink" title="分析方法"></a>分析方法</h2><p>大部分软件是以二进制形式发布的，利用这种形式的代码来分析程序的逻辑功能是非常困难的。通常是利用反汇编技术将二进制代码转化为汇编级代码（反汇编工具有IDA pro、W32DASM等），即<code>反汇编</code></p>
+<p>反汇编的方法：（<u>反汇编最重要且最困难的工作是：区分代码和数据</u>）</p>
+<p>最主要的反汇编策略分为两种：<br><strong>1.线性扫描策略：</strong><br>先确定起始位置，一条指令结束的地方即另一条指令开始的地方，逐条反汇编每条指令；缺点：没有考虑二进制信息控制流，不能避免将嵌入代码中的数据误解为指令；<br><strong>2.基于控制流的递归扫描策略:</strong><br>递归扫描算法重视控制流对反汇编过程的影响，控制流根据某一条指令是否被另一条指令引用来决定是否对其进行反汇编；</p>
+<h3 id="反汇编获取的主要信息"><a href="#反汇编获取的主要信息" class="headerlink" title="反汇编获取的主要信息"></a>反汇编获取的主要信息</h3><p>函数信息的获取和配对是后面所有份分析工作的前提。<br><strong>1.反汇编文本：</strong> 是反汇编器输出的主要部分。包括汇编指令信息和控制流信息等</p>
+<p><strong>2.函数信息：</strong> 包括函数入口地址、长度、参数总长度；需要收集的函数可分为导入函数、自定义函数（而自定义函数信息，主要分为导出函数、内部函数）。实际场景中我们重点关注程序本身的问题（根据问题代码分析的需要），所以只需要对二进制文件中的自定义函数进行收集；对导入函数的调用，仅仅作为这些自定义函数中的一些指令（调用）来看待</p>
+<p><strong>3.交叉引用：</strong> 在IDA中反汇编得到的xref有两种：代码交叉引用、数据交叉引用。<br>所有的交叉引用都是在一个地址引用另一个地址，这些地址可以是代码地址，或者数据地址。<br><strong>代码交叉引用：</strong> 表示一条指令将控制权转交给另一条指令，可以帮助反汇编器生成<code>控制流图</code>（CFG）和<code>函数调用图</code>；<br><strong>数据交叉引用：</strong> 用于跟踪二进制文件访问数据的方式（IDA中可分为：（1）读取交叉引用（2）写入交叉引用（3）偏移量交叉引用，分别用于表示某个位置何时被读取、何时被写入、何时被调用）</p>
+<h2 id="反汇编不足之处"><a href="#反汇编不足之处" class="headerlink" title="反汇编不足之处"></a>反汇编不足之处</h2><p>汇编码中的一些数据是在代码段内的。数据和代码混合的原因之一是：</p>
+<h3 id="1-为了数据的对齐"><a href="#1-为了数据的对齐" class="headerlink" title="1.为了数据的对齐"></a>1.为了数据的对齐</h3><p>这些数据插入到代码段，根据硬件架构的要求，一般会与无用的指令组合，从而对齐数据，以获得更好的性能。他们通常不会在运行时执行。例如<code>int 3 / nop / lea 0x0(%edi) / edi (or.eax,ebx,ecx…)</code> 是典型的<code>数据对齐</code>，要取决于编译器；这些用于数据对齐的代码，不是真正的代码，但是他们有正确的代码格式，与其他代码混合并分布在整个代码段这就会给反汇编器的解析工作带来困难</p>
+<h3 id="2-分支指令后插入数据"><a href="#2-分支指令后插入数据" class="headerlink" title="2.分支指令后插入数据"></a>2.分支指令后插入数据</h3><p>数据和代码混合的另外一个原因是一条分支指令后插入数据，如手动插入数据，或由编译器生成的c语言的switch-case指令跳转表。对于switch指令，翻译到汇编语言后，跳转表保存了不同的分支的目标地址。如在以下反汇编代码片段中，401250处的jmp跳转语句引用了一个以401257为起始位置的地址表；但是反汇编器把401258处作为一条指令来处理，并错误的生成了其对应的汇编语言形式。如果从401258处开始的连续4字节组作为<code>小端值</code>分析，我们就会发现每个字节组都代表一个临近地址的指针，构成了一个地址表；</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">; ==============================</span><br><span class="line">; wrong: </span><br><span class="line">401250: ff 24 95 57 12 40 00        loopne 0x40126b</span><br><span class="line">401257: e0 12                       inc eax</span><br><span class="line">401259: 40                          add BYTE PTR [ebx-0x6fffbfee], cl</span><br><span class="line">40125a: 00 8b 12 40 00 90           adc al,BYTE PTR [eax]</span><br><span class="line">401260: 12 40 00                    xchg ebp, eax </span><br><span class="line">401263: 95                          adc al, BYTE PTR [eax]</span><br><span class="line">401264: 12 40 00                    call 0x4012:0xa2004012</span><br><span class="line">401267: 9a 12 40 00 a2 12 40        add BYTE PTR [edx-0x4dffbfee], ch</span><br><span class="line">40126e: 00 aa 12 40 00 b2           adc al, BYTE PTR [eax]    </span><br><span class="line">401274: 12 40 00                    mov edx, 0xc2004012</span><br><span class="line">401277: ba 12 40 00 c2              adc al, BYTE PTR [eax]</span><br><span class="line">40127c: 12 40 00                    lret 0x4012</span><br><span class="line">40127f: ca 12 40                    add dl, dl</span><br><span class="line">401282: 00 d2                       adc al, BYTE PTR [eax]</span><br><span class="line">401284: 12 40 00                    ficom   DWORD PTR [edx]</span><br><span class="line">401287: da 12                       inc eax</span><br><span class="line">401289: 40                          add BYTE PTR [ebx+50eb0c45], cl</span><br><span class="line">40128a: 00 8b 45 0c eb 50           mov eax, DWORD PTR [ebp+16]</span><br><span class="line">401290: 8b 45 10                    jmp 0x4012e0</span><br><span class="line">; ==============================</span><br><span class="line">; right:</span><br><span class="line">401250: ff 24 95 </span><br><span class="line">401256: 57 12 40 00 </span><br><span class="line">; Table of address:</span><br><span class="line">401257: e0 12 40 00</span><br><span class="line">40125b: 8b 12 40 00 </span><br><span class="line">40125f: 90 12 40 00 </span><br><span class="line">401263: 95 12 40 00 </span><br><span class="line">401267: 9a 12 40 00 </span><br><span class="line">40126b: a2 12 40 00</span><br><span class="line">40126f: aa 12 40 00 </span><br><span class="line">401273: b2 12 40 00 </span><br><span class="line">401277: ba 12 40 00 </span><br><span class="line">40127b: c2 12 40 00 </span><br><span class="line">40127f: ca 12 40 00 </span><br><span class="line">401283: d2 12 40 00 </span><br><span class="line">401287: da 12 40 00 </span><br><span class="line"></span><br><span class="line">40128b: 8b 45 0c eb 50</span><br><span class="line">401290: 8b 45 10</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-静态反汇编器无法得到动态信息"><a href="#3-静态反汇编器无法得到动态信息" class="headerlink" title="3.静态反汇编器无法得到动态信息"></a>3.静态反汇编器无法得到动态信息</h3><p>静态分析无法准确分析控制流</p>
+<p>4.指令长度是可变的<br>X86系统上，指令有可变的长度，从而是反汇编器更难确定指令的结束位置（使用精简指令集，统一采用标准字长的指令，可以降低分析复杂度）；因为之前的合法指令的尾端之后是下一个指令，指令之间没有混合数据，所以必须能够正确的顺序反汇编所有指令。考虑到在代码段插入数据的情况，数据不会在执行过程中被当作指令来执行，否则会运行时错误。所以数据只能被插入到执行流不可达的地址。因此，数据将仅出现在分支指令后的地址中，如<code>call /ret /jmp /jcc</code>等，这样就确保指令和数据不会混杂在一起；</p>
+<p>汇编代码因为语义信息缺失往往很难直接进行模式分析，为此往往将汇编代码转化为“中间表示”。针对“中间表示”进一步分析出相关属性信息描述，并针对其属性信息进行模式匹配和检测分析；对二进制程序的控制流等结构信息的检测和分析，以便提供模式分析和检测的准确性</p>
+<h2 id="逆向中间表示"><a href="#逆向中间表示" class="headerlink" title="逆向中间表示"></a>逆向中间表示</h2><p>从一种对象类型转变为另一种的方法，就称为<code>中间表示</code>（中间表示是二进制程序分析的研究重点）。直接对汇编指令进行分析，分析结果会存在很大的<strong>不精确性</strong>，因此对二进制程序进行逆向分析普遍基于逆向中间表示进行</p>
+<p>在高级编程语言的实现中，存在<code>通用中间语言</code>（CIL），是高级编程语言转化为底层机器码中间的一种<strong>字节码</strong>。而逆向的中间表示是将完全架构相关的机器码或完全用户可读的编程语言，转变为自动分析程序可处理的中间语言</p>
+<p>合适的中间表示应该具有<u><strong>完整性</strong>（中间表示能够正确、全面地表示程序信息）、<strong>通用性</strong>（中间表示既能表示二进制代码信息，也能表示源码信息）</u>。</p>
+<p><em>如表示出明晰的访存指令。X86汇编在指令上对读写的区分不明晰。例如，mov指令可以表示读或写内存。而循环读内存不会造成缓冲区溢出，循环写内存则可能造成缓冲区溢出，因此为了易于缓冲区溢出的检测，对读写内存的mov指令需要进行区分</em></p>
+<p>逆向分析的<code>中间表示</code>REIL(reverse engineer intermediate representation language)是汇编级别的中间表示，其指令粒度比汇编指令小，一条x86汇编指令将映射到若干条REIL中间表示指令中，具体看汇编指令的复杂程度；</p>
+<p>BitBlaze的汇编级别逆向中间表示<code>VEX</code><br>VEX是一种类RISC精简指令集结构的指令集。bitblaze在二进制分析的步骤是：<br>1.对二进制程序进行反汇编<br>2.把汇编语言翻译成VEX。VEX中间语言是Valgrind动态工具的一部分，VEX中间语言不适合直接进行程序分析（关于指令副作用的信息不明确，<strong>指令副作用：一条指令可同时完成读内存、计算、置标志位多种操作，使分析变得困难）</strong>这是为了简化Vine：先使用现有的工具把汇编语言转化为基本的中间语言，然后在第三步中消除所有的副作用，使分析准确可靠；<br>3.把VEX中间语言转化为Vine IL。vine中间语言可以准确的表示汇编指令的语义；</p>
+
+
+                
+            </div>
+
+            <!-- Comments -->
+            
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
+            
+        </div>
+    </div>
+</article>
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+
+                    
+
+                    
+
+                    
+
+                    
+
+                    
+                </ul>
+                <p class="copyright text-muted">&copy; 2022 Mallawc<br></p>
+                <p class="copyright text-muted">Original Theme <a target="_blank" href="http://startbootstrap.com/template-overviews/clean-blog/">Clean Blog</a> from <a href="http://startbootstrap.com/" target="_blank">Start Bootstrap</a></p>
+                <p class="copyright text-muted">Adapted for <a target="_blank" href="https://hexo.io/">Hexo</a> by <a href="http://www.codeblocq.com/" target="_blank">Jonathan Klughertz</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>
