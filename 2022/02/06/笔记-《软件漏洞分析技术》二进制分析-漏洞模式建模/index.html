@@ -212,7 +212,10 @@
 <blockquote>
 <p>首先获取目标地址缓冲区大小destminsize和获取源数据缓冲区大小srcminsize<br>if( destminsize &lt; srcminsize ) or ( destmaxsize &lt; srcmaxsize )，则存在溢出情况。</p>
 </blockquote>
-<p>2.不固定，sprintf原型<code>int ymant(char *buffer,const char *format [,argument]…)</code>功能是把格式化的字符串写入buffer中，参数buffer是欲写入字符串的缓冲区；参数format指向的内存存放了格式化的字符串，参数[argument]为可选参数，可以是任何类型的数据。<strong>漏洞模式：当格式化字符串的长度 + 每个可选参数的总长度 &gt; 目标缓冲区的size，就会发生溢出。</strong></p>
+<p>2.不固定，sprintf原型<code>int ymant(char *buffer,const char *format [,argument]…)</code>功能是把格式化的字符串写入buffer中，参数buffer是欲写入字符串的缓冲区；参数format指向的内存存放了格式化的字符串，参数[argument]为可选参数，可以是任何类型的数据。<br>漏洞模式：</p>
+<blockquote>
+<p>当格式化字符串的长度 + 每个可选参数的总长度 &gt; 目标缓冲区的size，就会发生溢出。**</p>
+</blockquote>
 <h3 id="（2）：循环写内存模式"><a href="#（2）：循环写内存模式" class="headerlink" title="（2）：循环写内存模式"></a>（2）：循环写内存模式</h3><p>循环是自动化的灵魂也是程序中容易出错的地方。如果一个程序的“写缓冲区”操作发生在循环中，每次循环写缓冲区的不同位置，<code>循环控制变量</code>有一个变量传入，而这个<u>控制变量是用户可控的</u>，如文件输入或由用户输入得到，那么，当程序没有对<code>循环控制变量</code>做<code>完备性验证</code>时，在循环过程中就有可能会发生缓冲区溢出。</p>
 <p>循环写内存缓冲区溢出的一般模式：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">taint_data = fread();</span><br><span class="line">buffer[256];</span><br><span class="line">taint_size = len(taint_data);</span><br><span class="line">index = 0;</span><br><span class="line">while(index &lt; taint_size)</span><br><span class="line">&#123;</span><br><span class="line">    buffer[index] = taint_data[index];</span><br><span class="line">    index++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -220,20 +223,40 @@
 <h2 id="整数溢出漏洞"><a href="#整数溢出漏洞" class="headerlink" title="整数溢出漏洞"></a>整数溢出漏洞</h2><p>是由极端输入数据引起的整数溢出<code>旁路</code>了程序的正常状态检查条件，进而使得接下来的“可信”程序代码段在错误输入数据的控制下，最终发生无法预料的错误。</p>
 <h3 id="高危整数溢出漏洞性质："><a href="#高危整数溢出漏洞性质：" class="headerlink" title="高危整数溢出漏洞性质："></a>高危整数溢出漏洞性质：</h3><p>（1）漏洞一定出现在一条由输入数据控制的可信指令执行的路径上<br>（2）漏洞通常由具有极端数值的输入数据引发<br>（3）漏洞必须引发程序员没有考虑到且没有处理的程序异常</p>
 <p>漏洞可能出现在与整型变量相关的运算操作、赋值操作等地方，但是不是绝对的，<u>还需要判断整型变量的数值是否在其类型所能表示的范围内，以及该数值是否与外部输入有关</u>。</p>
-<p>在二进制代码中是没有<code>类型信息</code>的，只能从一些特定操作指令（如<code>SAL、SHL</code>）得到这些信息，或者利用相关函数或语句提取类型信息。类型信息对整型溢出漏洞的检测非常重要。</p>
-<p>漏洞模式：<br>规则1：</p>
+<p>在二进制代码中是没有<code>类型信息</code>的，只能从一些特定操作指令（如<code>SAL、SHL</code>）得到这些信息，或者利用相关函数或语句提取类型信息。类型信息对整型溢出漏洞的检测非常重要。<br>漏洞建模：<br>（1）整型运算、赋值操作的抽象表示：<br>设operation(addr)为地址addr的算术运算，其中result表示运算结果的类型，opcode表示该运算的操作符，loperand和roperand表示该运算的左右操作数</p>
+<blockquote>
+<p>operation(addr)={(opcode,result,loperand,roperand)}</p>
+</blockquote>
+<p>设assignment(addr)为地址addr的赋值运算，其中destination表示目的操作数的类型，source-value表示源操作数的数值</p>
+<blockquote>
+<p>assignment(addr)={(destinatin,source-value)}</p>
+</blockquote>
+<p>（2）约束限制整型运算和赋值操作，约束条件以下：<br>规则1：检测整型溢出，对一些特定的算术运算进行约束，判断结果是否超过目标操作数所能表示的最大值、最小值</p>
 <blockquote>
 <p>  operation(addr) -&gt; minresult &lt;= result-value &lt;= maxresult<br>    result-value = loperand opcode roperand</p>
 </blockquote>
-<p>规则2：</p>
+<p>规则2：检测赋值截断，对赋值运算进行约束，判断源操作数的值是否在目标操作数类型可以表示的数值范围内</p>
 <blockquote>
 <p>  assignment(addr) -&gt; mindestination &lt;= source-value &lt;= maxdestination</p>
 </blockquote>
-<p>规则3：</p>
+<p>规则3：检测符号错误，用来对存在类型冲突的操作数约束，判断其值是否是负数</p>
 <blockquote>
-<p>  operand’s type is bot -&gt; operand-&gt;value &gt;= 0
-     </p>
+<p>  operand’s type is bot -&gt; operand-&gt;value &gt;= 0</p>
 </blockquote>
+<h2 id="内存地址对象破坏性调用"><a href="#内存地址对象破坏性调用" class="headerlink" title="内存地址对象破坏性调用"></a>内存地址对象破坏性调用</h2><p>是指某对象的内存地址保存在一个变量中，攻击者通过<strong>调用初始化或释放功能的异常操作</strong>，将保存对象的内存地址进行释放，从而导致读取变量中保存的内存地址以期访问某对象的过程，会触发<strong>内存访问异常</strong>(use after free)。</p>
+<p>内存地址对象破坏性调用漏洞属于了解程序代码后实施的一种非正常调用导致的漏洞，可归类到<code>UAF漏洞</code>。</p>
+<p>漏洞模式：</p>
+<pre><code>func1 &#123;
+    创建对象obj，内存地址为addr1，此对象的内存地址保存在变量var1中;
+    ...
+&#125;
+
+func2 &#123;
+    通过读取变量var1中保存的内存地址，从而调用对象obj;
+&#125;
+
+func3()是一个进行free()操作的函数，若利用内存分配机制、源码缺陷在func1和func2函数之间进行调用，将起到破坏性的作用;
+</code></pre>
 
 
                 
