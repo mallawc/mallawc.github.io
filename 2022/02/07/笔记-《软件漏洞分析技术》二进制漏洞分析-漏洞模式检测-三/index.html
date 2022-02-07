@@ -13,6 +13,10 @@
     
 
     
+        <meta name="description" content="模式抽取 -&amp;gt; 模式检测
+漏洞模式的触发、利用的先决条件：(1)可控变量、(2)约束条件
+（1）变量可被程序输入影响，且可能保存在内存或寄存器中，则为可控变量；可使用污点跟踪技术确定通过程序输入可控的全部内存地址或寄存器。只有漏洞特征代码段中直接导致漏洞触发的变量满足可控性，才说明能够触发漏洞"/>
+    
 
     <!--Author-->
     
@@ -21,10 +25,14 @@
 
     <!--Open Graph Title-->
     
-        <meta property="og:title" content="Mallawc的技术博客"/>
+        <meta property="og:title" content="笔记:《软件漏洞分析技术》二进制漏洞分析:漏洞模式检测(三)"/>
     
 
     <!--Open Graph Description-->
+    
+        <meta property="og:description" content="模式抽取 -&amp;gt; 模式检测
+漏洞模式的触发、利用的先决条件：(1)可控变量、(2)约束条件
+（1）变量可被程序输入影响，且可能保存在内存或寄存器中，则为可控变量；可使用污点跟踪技术确定通过程序输入可控的全部内存地址或寄存器。只有漏洞特征代码段中直接导致漏洞触发的变量满足可控性，才说明能够触发漏洞"/>
     
 
     <!--Open Graph Site Name-->
@@ -32,7 +40,7 @@
 
     <!--Type page-->
     
-        <meta property="og:type" content="website"/>
+        <meta property="og:type" content="article"/>
     
 
     <!--Page Cover-->
@@ -51,7 +59,7 @@
 
     <!-- Title -->
     
-    <title>Mallawc的技术博客</title>
+    <title>笔记:《软件漏洞分析技术》二进制漏洞分析:漏洞模式检测(三) - Mallawc的技术博客</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
@@ -156,171 +164,61 @@
 
     <!-- Main Content -->
     <!-- Page Header -->
-<!-- Set your background image for this header in the theme's configuration: index_cover -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
 <header class="intro-header" style="background-image: url('/img/bg.jpeg')">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <div class="site-heading">
-                    <h1>Mallawc的技术博客</h1>
-                    <hr class="small">
-                    <span class="subheading">关注：逆向、漏洞分析、关键基础设施、开发</span>
+                <div class="post-heading">
+                    <h1>笔记:《软件漏洞分析技术》二进制漏洞分析:漏洞模式检测(三)</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2022-02-07
+                        
+                    </span>
                 </div>
             </div>
         </div>
     </div>
 </header>
 
-<!-- Main Content -->
-<div class="container">
-    <div class="row">
-        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-            
-                <div class="post-preview">
-    <a href="/2022/02/07/笔记-《软件漏洞分析技术》二进制漏洞分析-漏洞模式检测-三/">
-        <h2 class="post-title">
-            笔记:《软件漏洞分析技术》二进制漏洞分析:漏洞模式检测(三)
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2022-02-07
-    </p>
-</div>
-<hr>
-            
-                <div class="post-preview">
-    <a href="/2022/02/06/笔记-《软件漏洞分析技术》二进制分析-漏洞模式建模/">
-        <h2 class="post-title">
-            笔记:《软件漏洞分析技术》二进制漏洞分析:漏洞模式建模(二)
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2022-02-06
-    </p>
-</div>
-<hr>
-            
-                <div class="post-preview">
-    <a href="/2022/02/06/笔记：《软件漏洞分析技术》-二进制漏洞分析：基于模式的漏洞分析/">
-        <h2 class="post-title">
-            笔记:《软件漏洞分析技术》二进制漏洞分析:基于模式的漏洞分析(一)
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2022-02-06
-    </p>
-</div>
-<hr>
-            
-                <div class="post-preview">
-    <a href="/2022/02/04/shellcode变形/">
-        <h2 class="post-title">
-            shellcode变形
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2022-02-04
-    </p>
-</div>
-<hr>
-            
-                <div class="post-preview">
-    <a href="/2022/02/04/ENI-Server样本分析（CVE-2019-16265）/">
-        <h2 class="post-title">
-            ENI Server样本分析和利用(CVE-2019-16265)
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2022-02-04
-    </p>
-</div>
-<hr>
-            
-                <div class="post-preview">
-    <a href="/2022/02/03/Log4j2漏洞-CVE-2021-44228-复现/">
-        <h2 class="post-title">
-            Log4j2漏洞(CVE-2021-44228)复现(一)
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2022-02-03
-    </p>
-</div>
-<hr>
-            
-                <div class="post-preview">
-    <a href="/2021/08/13/t4/">
-        <h2 class="post-title">
-            基于漏洞模式的特征代码检测插件
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2021-08-13
-    </p>
-</div>
-<hr>
-            
-                <div class="post-preview">
-    <a href="/2021/08/11/ida-scripted-plugin/">
-        <h2 class="post-title">
-            ida scripted plugin
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2021-08-11
-    </p>
-</div>
-<hr>
-            
-                <div class="post-preview">
-    <a href="/2021/08/07/online/">
-        <h2 class="post-title">
-            online!
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2021-08-07
-    </p>
-</div>
-<hr>
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+
+            <!-- Gallery -->
             
 
-            <ul class="pager">
-    
-    
-</ul>
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <p>模式抽取 -&gt; 模式检测</p>
+<p>漏洞模式的<u>触发、利用的先决条件</u>：<u>(1)可控变量、(2)约束条件</u></p>
+<p>（1）变量可被程序输入影响，且可能保存在内存或寄存器中，则为<code>可控变量</code>；可使用<code>污点跟踪</code>技术确定通过程序输入可控的全部内存地址或寄存器。只有漏洞特征代码段中直接导致漏洞触发的<strong>变量满足可控性</strong>，才说明能够触发漏洞。</p>
+<p>（2）约束条件是程序执行流程中，通过算术运算、逻辑运算和条件语句等附加的对数据的限制。抽取变量的约束条件需要利用<code>符号执行</code>技术。当分析到漏洞特征代码段时，，指定能够触发漏洞的变量值，再通过<code>约束求解器</code>回溯计算输入的数据具体值，<u>若约束求解器无法计算出输入数据的具体值，说明存在漏洞特征代码段的目标程序已经考虑了可能导致漏洞触发的情况，并通过条件语句控制程序的执行流程，排除了漏洞触发的可能性</u>，因此检测结果应为<strong>无法触发漏洞</strong>。</p>
+
+
+                
+            </div>
+
+            <!-- Comments -->
+            
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
+            
         </div>
     </div>
-</div>
-
-
+</article>
 
     <!-- Footer -->
     <hr />
