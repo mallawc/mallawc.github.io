@@ -235,7 +235,7 @@
 <blockquote>
 <p>  operation(addr) -&gt; minresult &lt;= result-value &lt;= maxresult<br>    result-value = loperand opcode roperand</p>
 </blockquote>
-<p>规则2：检测赋值截断，对赋值运算进行约束，判断源操作数的值是否在目标操作数类型可以表示的数值范围内</p>
+<p>规则2：检测赋值截断（即数据截断，当数据发生溢出时就会截断），对赋值运算进行约束，判断源操作数的值是否在目标操作数类型可以表示的数值范围内</p>
 <blockquote>
 <p>  assignment(addr) -&gt; mindestination &lt;= source-value &lt;= maxdestination</p>
 </blockquote>
@@ -244,6 +244,7 @@
 <p>  operand’s type is bot -&gt; operand-&gt;value &gt;= 0</p>
 </blockquote>
 <h2 id="内存地址对象破坏性调用"><a href="#内存地址对象破坏性调用" class="headerlink" title="内存地址对象破坏性调用"></a>内存地址对象破坏性调用</h2><p>是指某对象的内存地址保存在一个变量中，攻击者通过<strong>调用初始化或释放功能的异常操作</strong>，将保存对象的内存地址进行释放，从而导致读取变量中保存的内存地址以期访问某对象的过程，会触发<strong>内存访问异常</strong>(use after free)。</p>
+<p>这种漏洞比较<strong>隐蔽</strong>，因为触发漏洞函数都是正常函数，需要采用意料之外的实际操作方式才能够触发漏洞，这需要了解程序中函数的功能（白盒），并蓄意非正常地调用函数触发内存地址对象破坏性调用漏洞。</p>
 <p>内存地址对象破坏性调用漏洞属于了解程序代码后实施的一种非正常调用导致的漏洞，可归类到<code>UAF漏洞</code>。</p>
 <p>漏洞模式：</p>
 <pre><code>func1 &#123;
