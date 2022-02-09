@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <!--Description-->
+
+    
+
+    
+        <meta name="description" content="整型漏洞是一种常见的软件漏洞，而且比较隐蔽。在之前的笔记中总结过这种漏洞的模式，在这里将以参考文章，深入学习研究一下这种漏洞。
+看参考文章戳我 
+整型溢出漏洞是通过让变量存入设想之外的数值后导致，这使得该类型漏洞比其他内存覆写漏洞更加“隐蔽”。另外对于整型数据如何存储的知识点，虽然不是那么重要，但是"/>
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Mallawc"/>
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="深入研究整型溢出漏洞"/>
+    
+
+    <!--Open Graph Description-->
+    
+        <meta property="og:description" content="整型漏洞是一种常见的软件漏洞，而且比较隐蔽。在之前的笔记中总结过这种漏洞的模式，在这里将以参考文章，深入学习研究一下这种漏洞。
+看参考文章戳我 
+整型溢出漏洞是通过让变量存入设想之外的数值后导致，这使得该类型漏洞比其他内存覆写漏洞更加“隐蔽”。另外对于整型数据如何存储的知识点，虽然不是那么重要，但是"/>
+    
+
+    <!--Open Graph Site Name-->
+        <meta property="og:site_name" content="Mallawc的技术博客"/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article"/>
+    
+
+    <!--Page Cover-->
+    
+    
+        <meta property="og:image" content="http://example.comimg/bg.jpeg"/>
+    
+
+        <meta name="twitter:card" content="summary_large_image"/>
+
+    
+
+    
+        <meta name="twitter:image" content="http://example.comimg/bg.jpeg"/>
+    
+
+    <!-- Title -->
+    
+    <title>深入研究整型溢出漏洞 - Mallawc的技术博客</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+    <link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css"/>
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css"/>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet"/>
+
+    <!-- Google Analytics -->
+    
+
+
+    <!-- favicon -->
+    
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">MallawcTechBlog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li>
+                        <a href="/">
+                            
+                                Home
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/archives">
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/tags">
+                            
+                                Tags
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/categories">
+                            
+                                Categories
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/%5Bobject%20Object%5D">
+                            
+                                <i class="fa fa-github fa-stack-2x"></i>
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('/img/bg.jpeg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>深入研究整型溢出漏洞</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2022-02-08
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+                <div class="col-lg-4 col-lg-offset-2 col-md-5 col-md-offset-1 post-tags">
+                    
+                        
+
+
+<a href="/tags/漏洞分析/">#漏洞分析</a>
+
+
+                    
+                </div>
+                <div class="col-lg-4 col-md-5 post-categories">
+                    
+                </div>
+            
+
+            <!-- Gallery -->
+            
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <p>整型漏洞是一种常见的软件漏洞，而且比较隐蔽。在之前的笔记中总结过这种漏洞的模式，在这里将以参考文章，深入学习研究一下这种漏洞。</p>
+<p><a target="_blank" rel="noopener" href="http://phrack.org/issues/60/10.html#article">看参考文章戳我</a><br><img src="https://gitee.com/mallawc/myimage/raw/master/integer_cover.png" width="680" height="313"> </p>
+<p>整型溢出漏洞是通过让变量存入<strong>设想之外的数值</strong>后导致，这使得该类型漏洞比其他内存覆写漏洞更加“隐蔽”。另外对于整型数据如何存储的知识点，虽然不是那么重要，但是却十分有用。</p>
+<p>什么是整型？<strong>def：</strong></p>
+<p>整型和指针类型数据是所分配的内存大小是相同的，在32位系统中（如i386）是32bits，在64位系统中（如SPARC）是64bits。</p>
+<p>计算机中的计数系统有二进制（binary）或者十六进制（hexadecimal），而人类最熟悉的计数系统是十进制（decimal），所以在计算机中会将整型数据都是存储为二元值0、1。</p>
+<p><em><strong>“如何使用二进制数据表示负数呢？”</strong></em><br>人们想出了这样一个方法：使用<code>最高有效位</code>（Most significant bit）去标识一个变量的正负号，msb=1表示负数，msb=0表示正数，要知道<u>最高有效位本来的作用是指定一个整数数位中权重最高的那个，现在被用作表示正负符号的标识位</u>。</p>
+<p>但是这种表示方法导致了一个问题：<code>符号溢出</code>（signedness bugs）<br>符号溢出就是，将一个无符号的变量被看作有符号，或者一个有符号的变量被看作无符号（即符号位被溢出了）。因为并非所有的数据都是需要标定符号位的，而计算机是不会记录每条写入内存的数据所对应的类型是什么，<strong>在没有严格区分两者的限制条件下</strong>，存在<code>无符号变量</code>（unsigned value）和有符号变量可以相互转化的可能：</p>
+<p>(0 <u>0</u>010)2 = (2)10    有符号位时：=(2)10<br>(0 <u>0</u>101)2 = (5)10    有符号位时：=(5)10<br>(0 <u>1</u>011)2 = (11)10   有符号位时：=(-3)10 signedness bug<br>(1 <u>0</u>111)2 = (23)10   有符号位时：=(15)10 signedness bug</p>
+<p>什么是整型溢出？<br>整型变量有固定的大小和固定的可存储最大值，当尝试存入一个超出整型变量存储大小的数值时，就会发生整型溢出。ISC C99标准说明了：整型溢出可导致“未定义行为”出现，大多数的编译器似乎都没有考虑这种溢出，导致不可预知的、或者错误的数据被存储。</p>
+<p>为什么整型溢出漏洞危险？<br>这种漏洞被触发后是很难被监测出来的，因为一个程序是无法提前将所有的结果都计算出来并验证是否正确，而输入是多样的（隐蔽性）。<strong>当计算涉及到缓冲区大小或者数组的索引值时，整数溢出漏洞就会变得十分危险</strong>。大多数的整型溢出都是不可利用的，因为内存区由于有漏洞缓解机制，并不能被直接覆写，所以常见的情况是：整型溢出被用于结合其他类型的漏洞（缓冲区溢出）而使用，</p>
+<p>整型溢出时会发生什么？<br>在ISC C99是这样叙述的：</p>
+<blockquote>
+<p>“一个涉及到无符号操作数的计算是不会发生溢出的，因为如果计算结果无法用无符号型整数表示时，计算结果将会通过与<strong>无符号整数所能表示的最大值加一</strong>(MAXINT+1)这个值取模运算<strong>截短</strong>”</p>
+</blockquote>
+<p>如何理解这句话？<br>举个例子：设一个数a模b，b=4即表示b所能表示最大值为4；<br><code>a&lt;=4</code>时，<code>a=&#123;0,1,2,3,4&#125;</code>我们不进行模运算，因为a此时在b所能表示范围内;<br><code>a&gt;4</code>时，<code>a=&#123;5,6,7,...&#125;</code>，<code>a mod (b+1) = a mod 5 = &#123;0,1,2,3,4&#125;</code>，最终结果又会落在b的表示范围内；<br>将b想象成一种无符号数据类型即可，<strong>截短</strong>机制又被称为“wrap around”</p>
+<p>宽度溢出<br>给一个较小宽度的变量赋值一个较大宽度的值，示例如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">#include&lt;stdio.h&gt;</span><br><span class="line">int main(void)&#123;</span><br><span class="line">    int l;</span><br><span class="line">    short s;</span><br><span class="line">    char c;</span><br><span class="line"></span><br><span class="line">    l = 0xdeadbeef;</span><br><span class="line">    s = l;</span><br><span class="line">    c = l;</span><br><span class="line"></span><br><span class="line">    printf(&quot;l = 0x%x (%d bits)\n&quot;, l, sizeof(l) * 8);</span><br><span class="line">    printf(&quot;s = 0x%x (%d bits)\n&quot;, s, sizeof(s) * 8);</span><br><span class="line">    printf(&quot;c = 0x%x (%d bits)\n&quot;, c, sizeof(c) * 8);</span><br><span class="line">    </span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这段代码作用是：每一个赋值都超出了左值能够表示范围，所以它们都被截断到了左值的宽度。所以编程的时候要注意类型转换，计算表达式中包括了不同宽度的操作数时，较小宽度的操作数需要提升（integer promotion）到跟较大操作数相同的宽度然后再进行计算，否则会发生截短。</p>
+<p>输出如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">l = 0xdeadbeef (32 bits)</span><br><span class="line">s = 0xffffbeef (16 bits)</span><br><span class="line">c = 0xffffffef (8 bits)</span><br></pre></td></tr></table></figure>
+<p>计算机内部的操作是：考虑到s=l两个操作数的宽度不一致。因此s被提升到32位，然后把l的值赋给s，然后s又被截断回到16位并保存，如果结果比s所能表示的最大值还大的话，它将会被截短。</p>
+
+
+                
+            </div>
+
+            <!-- Comments -->
+            
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
+            
+        </div>
+    </div>
+</article>
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+
+                    
+
+                    
+
+                    
+
+                    
+
+                    
+                </ul>
+                <p class="copyright text-muted">&copy; 2022 Mallawc<br></p>
+                <p class="copyright text-muted">Original Theme <a target="_blank" href="http://startbootstrap.com/template-overviews/clean-blog/">Clean Blog</a> from <a href="http://startbootstrap.com/" target="_blank">Start Bootstrap</a></p>
+                <p class="copyright text-muted">Adapted for <a target="_blank" href="https://hexo.io/">Hexo</a> by <a href="http://www.codeblocq.com/" target="_blank">Jonathan Klughertz</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>
