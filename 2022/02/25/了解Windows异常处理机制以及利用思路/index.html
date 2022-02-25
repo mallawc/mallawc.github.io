@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <!--Description-->
+
+    
+
+    
+        <meta name="description" content="windows异常处理机制为了保证程序的健壮性，在发生运行错误时（除零、非法内存访问、文件打开错误、内存不足、磁盘读写错误、外设操作失败等）Windows会对运行中的程序提供一次补救的机会处理错误，这种机制是异常处理机制。
+我们之所以能够利用SEH进行内存攻击，很大原因是S.E.H结构体存放在系统栈"/>
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Mallawc"/>
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="了解Windows异常处理机制以及利用思路"/>
+    
+
+    <!--Open Graph Description-->
+    
+        <meta property="og:description" content="windows异常处理机制为了保证程序的健壮性，在发生运行错误时（除零、非法内存访问、文件打开错误、内存不足、磁盘读写错误、外设操作失败等）Windows会对运行中的程序提供一次补救的机会处理错误，这种机制是异常处理机制。
+我们之所以能够利用SEH进行内存攻击，很大原因是S.E.H结构体存放在系统栈"/>
+    
+
+    <!--Open Graph Site Name-->
+        <meta property="og:site_name" content="Mallawc的技术博客"/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article"/>
+    
+
+    <!--Page Cover-->
+    
+    
+        <meta property="og:image" content="http://example.comimg/bg.jpeg"/>
+    
+
+        <meta name="twitter:card" content="summary_large_image"/>
+
+    
+
+    
+        <meta name="twitter:image" content="http://example.comimg/bg.jpeg"/>
+    
+
+    <!-- Title -->
+    
+    <title>了解Windows异常处理机制以及利用思路 - Mallawc的技术博客</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+    <link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css"/>
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css"/>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet"/>
+
+    <!-- Google Analytics -->
+    
+
+
+    <!-- favicon -->
+    
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">MallawcTechBlog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li>
+                        <a href="/">
+                            
+                                Home
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/archives">
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/tags">
+                            
+                                Tags
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/categories">
+                            
+                                Categories
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/%5Bobject%20Object%5D">
+                            
+                                <i class="fa fa-github fa-stack-2x"></i>
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('/img/bg.jpeg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>了解Windows异常处理机制以及利用思路</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2022-02-25
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+                <div class="col-lg-4 col-lg-offset-2 col-md-5 col-md-offset-1 post-tags">
+                    
+                        
+
+
+<a href="/tags/漏洞分析/">#漏洞分析</a>
+
+
+                    
+                </div>
+                <div class="col-lg-4 col-md-5 post-categories">
+                    
+                </div>
+            
+
+            <!-- Gallery -->
+            
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <h2 id="windows异常处理机制"><a href="#windows异常处理机制" class="headerlink" title="windows异常处理机制"></a>windows异常处理机制</h2><p>为了保证程序的健壮性，在发生运行错误时（除零、非法内存访问、文件打开错误、内存不足、磁盘读写错误、外设操作失败等）Windows会对运行中的程序提供一次补救的机会处理错误，这种机制是异常处理机制。</p>
+<p>我们之所以能够利用SEH进行内存攻击，很大原因是S.E.H结构体存放在系统栈上，当线程初始化时，会自动向栈中安装一个S.E.H，作为线程默认的异常处理。</p>
+<p>栈中一般会同时存在多个S.E.H。在源码中使用<code>try&#123;&#125; except&#123;&#125;</code>或者<code>Assert</code>宏等表示，由编译器安装一个S.E.H，Microsoft的操作系统何编译器小组已经定义了这些关键字和他们的作用，其，其他编译器厂商完全按照他们的语义来就可以了，编译器的SEH支持层把原始的操作系统异常处理机制的复杂性封装起来，把SEH的细节都隐藏。S.E.H是一个单链表的存储结构，节点头放在<code>TEB FS:0</code>（线程环境块）</p>
+<p>当线程所安装的所有异常处理函数都不能处理（即除了链表最后一个节点外的所有的节点），系统将采用默认的异常处理函数。（最后一个节点）</p>
+<p>S.E.H在系统关闭程序之前，给程序一个执行预先设定的回调函数（call back）的机会。而调用该回调函数的结构体SEH是安装在栈上的，缓冲区溢出的数据是有可能淹没SEH的。</p>
+<p>对异常处理机制的利用是windows平台下漏洞利用的一大特色。利用异常处理机制往往也是一些高级漏洞利用技术的关键。在真实的 Windows 平台漏洞利用场景中，修改 S.E.H 的栈溢出和修改返回地址的栈溢出几乎同样流行。<u><strong>在许多高难度的限制条件下，直接用溢出触发异常的方法往往能得到高质量的exploit</strong></u>。</p>
+<p>异常处理机制与堆分配机制类似，会检测进程是否处于调试状态。如果直接使用调试器加载程序，异常处理会进入调试状态下的处理流程。另外异常处理机制与堆分配机制一样未被微软所公开，但是网络上有很多相关的研究报告。</p>
+<p><strong>异常处理的最小作用域是线程（即，结构化异常处理是基于线程）</strong>，每个线程都拥有自己的 S.E.H 链表。线程发生错误时，首先将使用自身的 S.E.H 进行处理。一个进程中可能同时存在很多个线程。此外，进程中也有一个能够“纵览全局”的异常处理。当线程自身的 S.E.H 无法“摆平”错误的时候，进程 S.E.H 将发挥作用。这种异常处理不仅仅能影响出错的线程，进程下属的所有线程可能都会受到影响。</p>
+<h2 id="了解异常函数的执行过程"><a href="#了解异常函数的执行过程" class="headerlink" title="了解异常函数的执行过程"></a>了解异常函数的执行过程</h2><p>异常处理的栈空间状态：首先系统执行异常的回调函数，在进入回调函数后，会在栈空间中压入一个<code>EXCEPTION_DISPOSITION Handler</code>结构：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">EXCEPTION_DISPOSITION</span><br><span class="line">__cdecl _except_handler( struct _EXCEPTION_RECORD *ExceptionRecord,</span><br><span class="line">                        void * EstablisherFrame,</span><br><span class="line">                        struct _CONTEXT *ContextRecord,</span><br><span class="line">                        void * DispatcherContext);</span><br></pre></td></tr></table></figure>
+
+<p>SEH调用链在示意图中间位置，压入栈中的Exception_Disposition handler结构在图下示意为<strong>最上方部分</strong>：<br><img src="https://gitee.com/mallawc/myimage/raw/master/seh_1.png" width="680" height="313"></p>
+<p><code>EXCEPTION_DISPOSITION Handler</code>结构体来自标准win32头文件<code>EXCPT.H</code>，该结构体含有四个参数：<br><strong>第一个参数：</strong><code>struct _EXCEPTION_RECORD *ExceptionRecord</code>是赋予异常状态（status）的代码，比如：<code>STATUS_ACCESS_VILOATION</code>的代码是<code>0xC0000005</code>，详细异常代码列表可以在<code>windows NT DDK</code>的<code>NTSTATUS.H</code>中找到；<br><strong>第二个参数：</strong>一个指向<code>establisher</code>栈结构的指针，是SEH中关键的一个参数；<br><strong>第三个参数：</strong>一个指向<code>CONTEXT</code>结构的指针，该结构定义在<code>WINNT.H</code>中，代表某个的特定线程的寄存器值，同<code>GetThreadContext</code>和<code>SetThreadContext</code>两个API的Context结构。<br>第四个参数  是<code>DispatcherContext</code>。<br><img src="https://gitee.com/mallawc/myimage/raw/master/seh_2.png" width="680" height="313"></p>
+<p>_except_handler回调函数接收到OS传递过来的很多有用信息：异常的类型、异常发生的地址等等，使用这些信息，异常回调函数就能决定下一步的行动。</p>
+<h2 id="基于windows结构化异常处理机制的利用思路"><a href="#基于windows结构化异常处理机制的利用思路" class="headerlink" title="基于windows结构化异常处理机制的利用思路"></a>基于windows结构化异常处理机制的利用思路</h2><p>首先我们知道SEH结构体中有两个成员，一个成员是SEH，另一个成员是NEXT SEH。其中SEH里存放的是一个异常处理函数的地址，而NEXT SEH里存放的是下一个指向SEH结构体的指针。</p>
+<p>所以我们可以利用栈溢出覆盖SEH和NEXT SEH的值并且触发GS保护机制（触发异常），然后程序就会执行这个我们覆盖的SEH，我们让这个SEH去执行一段最后能返回原来的栈上NEXT SEH位置的代码，执行我们覆盖的NEXT SEH里填写的jmp + 偏移数 指令，然后这个程序就能跳转到栈下方我们编写的shellcode，然后执行我们的shellcode。</p>
+<h3 id="疑问：构造payload的关键点"><a href="#疑问：构造payload的关键点" class="headerlink" title="疑问：构造payload的关键点"></a>疑问：构造payload的关键点</h3><pre><code>1.为什么SEH里填的地址不能直接是shellcode的地址？
+2.要让SEH去执行什么代码才能在最后让程序返回原来的栈上NEXT SEH位置？
+</code></pre>
+<ol>
+<li><p>因为程序默认都会开启<code>ALSR保护</code>,让堆、栈、共享库映射等线性区布局地址随机化，增加攻击者预测目的地址的难度，所以我们无法直接知道程序运行中shellcode在栈上的地址，所以我们要利用在NEXT SEH中填写的jmp来跳转到栈上shellcode起始位置。</p>
+</li>
+<li><p>要利用 <code>pop pop ret</code> 指令来达到我们预期的效果，原因要从Windows异常处理机制来解释。PPR指令的目的是使得<u><strong>esp向高地址移动八个字节</strong></u>，指向<code>Establisher Frame</code>（最终为存放第一个SEH结构体的位置，即<code>Next SEH</code>）。</p>
+</li>
+</ol>
+<p>PPR gadget选取可以通过工具，分析出程序所调用的众多模块中未开启保护机制的模块后提取出来，也就“<strong>短板效应</strong>”的利用。</p>
+
+
+                
+            </div>
+
+            <!-- Comments -->
+            
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
+            
+        </div>
+    </div>
+</article>
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+
+                    
+
+                    
+
+                    
+
+                    
+
+                    
+                </ul>
+                <p class="copyright text-muted">&copy; 2022 Mallawc<br></p>
+                <p class="copyright text-muted">Original Theme <a target="_blank" href="http://startbootstrap.com/template-overviews/clean-blog/">Clean Blog</a> from <a href="http://startbootstrap.com/" target="_blank">Start Bootstrap</a></p>
+                <p class="copyright text-muted">Adapted for <a target="_blank" href="https://hexo.io/">Hexo</a> by <a href="http://www.codeblocq.com/" target="_blank">Jonathan Klughertz</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>
